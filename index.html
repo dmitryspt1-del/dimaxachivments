@@ -1,25 +1,22 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>🎯 Ачивки Димы и Максима</title>
+  <!-- Подключаем Firebase SDK (compat-версия) -->
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
   <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
+    * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
-      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      font-family: 'Segoe UI', system-ui, sans-serif;
       background: #f0f4f8;
       min-height: 100vh;
       display: flex;
       justify-content: center;
       padding: 2rem 1rem;
     }
-
     .container {
       max-width: 750px;
       width: 100%;
@@ -28,7 +25,6 @@
       box-shadow: 0 20px 60px rgba(0,0,0,0.08);
       padding: 2rem 2rem 2.5rem;
     }
-
     h1 {
       font-size: 2.2rem;
       font-weight: 700;
@@ -38,7 +34,6 @@
       gap: 0.6rem;
       margin-bottom: 0.25rem;
     }
-
     .subhead {
       color: #4a5568;
       margin-bottom: 1.5rem;
@@ -46,7 +41,6 @@
       border-left: 4px solid #667eea;
       padding-left: 1rem;
     }
-
     .stats {
       display: flex;
       flex-wrap: wrap;
@@ -58,28 +52,22 @@
       font-weight: 500;
       color: #2d3748;
     }
-
-    .stats span {
-      font-weight: 600;
-    }
+    .stats span { font-weight: 600; }
     .stats .dima { color: #667eea; }
     .stats .maxim { color: #f6ad55; }
     .stats .both { color: #48bb78; }
 
-    /* Форма добавления */
     .add-form {
       display: flex;
       flex-direction: column;
       gap: 0.8rem;
       margin-bottom: 2.5rem;
     }
-
     .add-form .row {
       display: flex;
       gap: 0.8rem;
       flex-wrap: wrap;
     }
-
     .add-form input, .add-form textarea {
       flex: 1;
       padding: 0.8rem 1.2rem;
@@ -90,20 +78,17 @@
       background: #f7fafc;
       font-family: inherit;
     }
-
     .add-form input:focus, .add-form textarea:focus {
       outline: none;
       border-color: #667eea;
       background: white;
-      box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.15);
+      box-shadow: 0 0 0 4px rgba(102,126,234,0.15);
     }
-
     .add-form textarea {
       border-radius: 24px;
       resize: vertical;
       min-height: 60px;
     }
-
     .add-form button {
       background: #667eea;
       color: white;
@@ -119,19 +104,16 @@
       gap: 0.5rem;
       white-space: nowrap;
     }
-
     .add-form button:hover {
       background: #5a6fd6;
       transform: scale(1.02);
     }
 
-    /* Список ачивок */
     .achievement-list {
       display: flex;
       flex-direction: column;
       gap: 0.8rem;
     }
-
     .achievement-item {
       background: #f7fafc;
       border-radius: 20px;
@@ -143,42 +125,35 @@
       border: 2px solid transparent;
       flex-wrap: wrap;
     }
-
     .achievement-item:hover {
       border-color: #e2e8f0;
       background: #f0f4ff;
     }
-
     .achievement-item.completed-by-both {
       opacity: 0.7;
       background: #e6f7ed;
       border-color: #48bb78;
     }
-
     .achievement-info {
       flex: 1;
       min-width: 150px;
     }
-
     .achievement-title {
       font-weight: 600;
       color: #1a202c;
       font-size: 1.1rem;
     }
-
     .achievement-desc {
       color: #4a5568;
       font-size: 0.9rem;
       margin-top: 2px;
     }
-
     .checkboxes {
       display: flex;
       gap: 1.2rem;
       align-items: center;
       flex-wrap: wrap;
     }
-
     .checkboxes label {
       display: flex;
       align-items: center;
@@ -187,7 +162,6 @@
       font-weight: 500;
       font-size: 0.9rem;
     }
-
     .checkboxes input[type="checkbox"] {
       width: 20px;
       height: 20px;
@@ -195,17 +169,14 @@
       cursor: pointer;
       flex-shrink: 0;
     }
-
     .checkboxes .maxim-label input {
       accent-color: #f6ad55;
     }
-
     .achievement-actions {
       display: flex;
       gap: 0.2rem;
       margin-left: auto;
     }
-
     .achievement-actions button {
       background: none;
       border: none;
@@ -216,19 +187,21 @@
       transition: 0.2s;
       color: #a0aec0;
     }
-
     .achievement-actions button:hover {
       background: #edf2f7;
       color: #e53e3e;
     }
-
     .empty {
       text-align: center;
       color: #a0aec0;
       padding: 3rem 0;
       font-size: 1.1rem;
     }
-
+    .loading {
+      text-align: center;
+      color: #667eea;
+      padding: 2rem 0;
+    }
     @media (max-width: 600px) {
       .container { padding: 1.5rem; }
       .add-form .row { flex-direction: column; }
@@ -242,7 +215,7 @@
 
 <div class="container">
   <h1>🏆 Ачивки</h1>
-  
+  <div class="subhead">Совместный список Димы и Максима на 2026 год</div>
 
   <div class="stats">
     <span>🙋 Дима: <span class="dima" id="dima-count">0</span></span>
@@ -250,58 +223,93 @@
     <span>✅ Оба: <span class="both" id="both-count">0</span></span>
   </div>
 
-  <!-- Форма добавления -->
   <div class="add-form">
     <div class="row">
-      <input type="text" id="titleInput" placeholder="Название ачивки" required>
+      <input type="text" id="titleInput" placeholder="Название ачивки" required />
       <button id="addBtn">➕ Добавить</button>
     </div>
     <textarea id="descInput" placeholder="Описание (необязательно)"></textarea>
   </div>
 
-  <!-- Список -->
-  <div id="listContainer" class="achievement-list"></div>
+  <div id="listContainer" class="achievement-list">
+    <div class="loading">⏳ Загрузка данных...</div>
+  </div>
 </div>
 
 <script>
-  // ---- Хранилище ----
-  const STORAGE_KEY = 'achievements2026';
+  // ---------------------------------------------------------------------
+  // ВАШ КОНФИГ FIREBASE (вставлен из вашего проекта)
+  // ---------------------------------------------------------------------
+  const firebaseConfig = {
+    apiKey: "AIzaSyBU8d555s2UwmcsMuPr19lTEWE12ESvlaE",
+    authDomain: "dimaxachivments.firebaseapp.com",
+    projectId: "dimaxachivments",
+    storageBucket: "dimaxachivments.firebasestorage.app",
+    messagingSenderId: "1607300611",
+    appId: "1:1607300611:web:1af2ef66270d40b7dec036"
+  };
 
-  // ---- Модель данных ----
+  // Инициализация Firebase
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.database();
+
+  // ---- Работа с Realtime Database ----
+  const DB_PATH = 'achievements'; // путь в базе
+
   let achievements = [];
 
-  // ---- Загрузка из localStorage ----
-  function loadData() {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    if (stored) {
-      try {
-        achievements = JSON.parse(stored);
-        // миграция: если у старых записей нет полей completedDima/Maxim, добавим
-        achievements = achievements.map(a => ({
-          ...a,
-          completedDima: a.completedDima !== undefined ? a.completedDima : false,
-          completedMaxim: a.completedMaxim !== undefined ? a.completedMaxim : false,
+  // ---- Подписка на изменения в реальном времени ----
+  function subscribeToAchievements() {
+    db.ref(DB_PATH).on('value', (snapshot) => {
+      const data = snapshot.val();
+      if (data) {
+        achievements = Object.keys(data).map(key => ({
+          id: key,
+          ...data[key]
         }));
-      } catch (e) {
+      } else {
         achievements = [];
       }
-    } else {
-      // демо-данные (можно удалить или оставить для примера)
-      achievements = [
-        { id: 1, title: 'Пробежать 10 км', description: 'За 1 час', completedDima: false, completedMaxim: false },
-        { id: 2, title: 'Прочитать 12 книг', description: 'По одной в месяц', completedDima: false, completedMaxim: false },
-      ];
+      render();
+    }, (error) => {
+      console.error('Ошибка загрузки:', error);
+      document.getElementById('listContainer').innerHTML =
+        `<div class="empty">❌ Ошибка загрузки: ${error.message}. Проверьте интернет и настройки Firebase.</div>`;
+    });
+  }
+
+  // ---- Добавление ----
+  async function addAchievement(title, description) {
+    try {
+      const newRef = db.ref(DB_PATH).push();
+      await newRef.set({
+        title: title,
+        description: description || '',
+        completedDima: false,
+        completedMaxim: false,
+        createdAt: firebase.database.ServerValue.TIMESTAMP
+      });
+    } catch (error) {
+      alert('Ошибка при добавлении: ' + error.message);
     }
-    saveData();
   }
 
-  function saveData() {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(achievements));
+  // ---- Обновление чекбокса ----
+  async function toggleCheckbox(id, field, value) {
+    try {
+      await db.ref(`${DB_PATH}/${id}/${field}`).set(value);
+    } catch (error) {
+      alert('Ошибка обновления: ' + error.message);
+    }
   }
 
-  // ---- Генерация ID ----
-  function generateId() {
-    return Date.now() + Math.random();
+  // ---- Удаление ----
+  async function deleteAchievement(id) {
+    try {
+      await db.ref(`${DB_PATH}/${id}`).remove();
+    } catch (error) {
+      alert('Ошибка удаления: ' + error.message);
+    }
   }
 
   // ---- Рендеринг ----
@@ -309,7 +317,6 @@
     const container = document.getElementById('listContainer');
     const total = achievements.length;
 
-    // Статистика
     const dimaDone = achievements.filter(a => a.completedDima).length;
     const maximDone = achievements.filter(a => a.completedMaxim).length;
     const bothDone = achievements.filter(a => a.completedDima && a.completedMaxim).length;
@@ -322,7 +329,6 @@
       return;
     }
 
-    // Сортируем: сначала те, где не все отметили
     const sorted = [...achievements].sort((a, b) => {
       const aDone = a.completedDima && a.completedMaxim ? 1 : 0;
       const bDone = b.completedDima && b.completedMaxim ? 1 : 0;
@@ -340,11 +346,11 @@
           </div>
           <div class="checkboxes">
             <label class="dima-label">
-              <input type="checkbox" class="ach-checkbox dima-check" ${ach.completedDima ? 'checked' : ''}>
+              <input type="checkbox" class="ach-checkbox dima-check" ${ach.completedDima ? 'checked' : ''} />
               🙋 Дима
             </label>
             <label class="maxim-label">
-              <input type="checkbox" class="ach-checkbox maxim-check" ${ach.completedMaxim ? 'checked' : ''}>
+              <input type="checkbox" class="ach-checkbox maxim-check" ${ach.completedMaxim ? 'checked' : ''} />
               👫 Максим
             </label>
           </div>
@@ -355,34 +361,24 @@
       `;
     }).join('');
 
-    // ---- События на чекбоксы ----
+    // События на чекбоксы
     container.querySelectorAll('.ach-checkbox').forEach(cb => {
       cb.addEventListener('change', function() {
         const item = this.closest('.achievement-item');
-        const id = Number(item.dataset.id);
-        const ach = achievements.find(a => a.id === id);
-        if (!ach) return;
-
+        const id = item.dataset.id;
         const isDima = this.classList.contains('dima-check');
-        if (isDima) {
-          ach.completedDima = this.checked;
-        } else {
-          ach.completedMaxim = this.checked;
-        }
-        saveData();
-        render();
+        const field = isDima ? 'completedDima' : 'completedMaxim';
+        toggleCheckbox(id, field, this.checked);
       });
     });
 
-    // ---- Удаление ----
+    // События на удаление
     container.querySelectorAll('.delete-btn').forEach(btn => {
       btn.addEventListener('click', function() {
         const item = this.closest('.achievement-item');
-        const id = Number(item.dataset.id);
+        const id = item.dataset.id;
         if (confirm('Удалить ачивку?')) {
-          achievements = achievements.filter(a => a.id !== id);
-          saveData();
-          render();
+          deleteAchievement(id);
         }
       });
     });
@@ -395,7 +391,7 @@
     return div.innerHTML;
   }
 
-  // ---- Добавление ----
+  // ---- Обработчик добавления ----
   document.getElementById('addBtn').addEventListener('click', function() {
     const titleInput = document.getElementById('titleInput');
     const descInput = document.getElementById('descInput');
@@ -407,32 +403,20 @@
       return;
     }
 
-    achievements.push({
-      id: generateId(),
-      title: title,
-      description: desc,
-      completedDima: false,
-      completedMaxim: false,
-    });
-
-    saveData();
-    render();
+    addAchievement(title, desc);
     titleInput.value = '';
     descInput.value = '';
     titleInput.focus();
   });
 
-  // ---- Enter в поле названия ----
   document.getElementById('titleInput').addEventListener('keydown', function(e) {
     if (e.key === 'Enter') {
       document.getElementById('addBtn').click();
     }
   });
 
-  // ---- Инициализация ----
-  loadData();
-  render();
+  // ---- Старт ----
+  subscribeToAchievements();
 </script>
-
 </body>
 </html>
