@@ -4,7 +4,6 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>🎯 Ачивки Димы и Максима</title>
-  <!-- Подключаем Firebase SDK (compat-версия) -->
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
   <style>
@@ -18,7 +17,7 @@
       padding: 2rem 1rem;
     }
     .container {
-      max-width: 750px;
+      max-width: 800px;
       width: 100%;
       background: white;
       border-radius: 32px;
@@ -62,6 +61,9 @@
       flex-direction: column;
       gap: 0.8rem;
       margin-bottom: 2.5rem;
+      background: #f7fafc;
+      padding: 1.2rem;
+      border-radius: 24px;
     }
     .add-form .row {
       display: flex;
@@ -75,13 +77,12 @@
       border-radius: 40px;
       font-size: 1rem;
       transition: 0.2s;
-      background: #f7fafc;
+      background: white;
       font-family: inherit;
     }
     .add-form input:focus, .add-form textarea:focus {
       outline: none;
       border-color: #667eea;
-      background: white;
       box-shadow: 0 0 0 4px rgba(102,126,234,0.15);
     }
     .add-form textarea {
@@ -119,11 +120,10 @@
       border-radius: 20px;
       padding: 1rem 1.5rem;
       display: flex;
-      align-items: center;
-      gap: 1rem;
+      flex-direction: column;
+      gap: 0.6rem;
       transition: 0.2s;
       border: 2px solid transparent;
-      flex-wrap: wrap;
     }
     .achievement-item:hover {
       border-color: #e2e8f0;
@@ -133,6 +133,12 @@
       opacity: 0.7;
       background: #e6f7ed;
       border-color: #48bb78;
+    }
+    .achievement-item .main-row {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      flex-wrap: wrap;
     }
     .achievement-info {
       flex: 1;
@@ -148,6 +154,72 @@
       font-size: 0.9rem;
       margin-top: 2px;
     }
+    .achievement-file {
+      margin-top: 0.4rem;
+    }
+    .achievement-file a {
+      color: #667eea;
+      text-decoration: none;
+      font-size: 0.9rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+    }
+    .achievement-file a:hover {
+      text-decoration: underline;
+    }
+    .achievement-file img,
+    .achievement-file video {
+      max-width: 100%;
+      max-height: 300px;
+      border-radius: 12px;
+      margin-top: 0.4rem;
+      border: 1px solid #e2e8f0;
+      display: block;
+    }
+    .achievement-file video {
+      background: #000;
+    }
+    .file-edit-area {
+      margin-top: 0.5rem;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      align-items: center;
+    }
+    .file-edit-area input {
+      flex: 1;
+      min-width: 200px;
+      padding: 0.4rem 0.8rem;
+      border: 2px solid #e2e8f0;
+      border-radius: 30px;
+      font-size: 0.9rem;
+    }
+    .file-edit-area button {
+      background: #48bb78;
+      color: white;
+      border: none;
+      padding: 0.4rem 1rem;
+      border-radius: 30px;
+      cursor: pointer;
+      font-weight: 500;
+    }
+    .file-edit-area button:hover {
+      background: #38a169;
+    }
+    .file-edit-area .cancel-btn {
+      background: #a0aec0;
+    }
+    .file-edit-area .cancel-btn:hover {
+      background: #718096;
+    }
+    .file-edit-area .remove-btn {
+      background: #fc8181;
+    }
+    .file-edit-area .remove-btn:hover {
+      background: #e53e3e;
+    }
+
     .checkboxes {
       display: flex;
       gap: 1.2rem;
@@ -191,6 +263,23 @@
       background: #edf2f7;
       color: #e53e3e;
     }
+    .attach-btn {
+      background: none;
+      border: none;
+      font-size: 1.1rem;
+      cursor: pointer;
+      color: #667eea;
+      padding: 0.2rem 0.6rem;
+      border-radius: 30px;
+      transition: 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+    }
+    .attach-btn:hover {
+      background: #edf2f7;
+      color: #5a6fd6;
+    }
     .empty {
       text-align: center;
       color: #a0aec0;
@@ -205,7 +294,7 @@
     @media (max-width: 600px) {
       .container { padding: 1.5rem; }
       .add-form .row { flex-direction: column; }
-      .achievement-item { flex-direction: column; align-items: stretch; }
+      .achievement-item .main-row { flex-direction: column; align-items: stretch; }
       .checkboxes { justify-content: space-around; }
       .achievement-actions { margin-left: 0; align-self: flex-end; }
     }
@@ -215,7 +304,7 @@
 
 <div class="container">
   <h1>🏆 Ачивки</h1>
-  
+  <div class="subhead">Совместный список Димы и Максима на 2026 год</div>
 
   <div class="stats">
     <span>🙋 Дима: <span class="dima" id="dima-count">0</span></span>
@@ -229,6 +318,7 @@
       <button id="addBtn">➕ Добавить</button>
     </div>
     <textarea id="descInput" placeholder="Описание (необязательно)"></textarea>
+    <!-- Убрали поле для ссылки при создании, теперь она добавляется позже -->
   </div>
 
   <div id="listContainer" class="achievement-list">
@@ -237,9 +327,6 @@
 </div>
 
 <script>
-  // ---------------------------------------------------------------------
-  // ВАШ КОНФИГ FIREBASE (вставлен из вашего проекта)
-  // ---------------------------------------------------------------------
   const firebaseConfig = {
     apiKey: "AIzaSyBU8d555s2UwmcsMuPr19lTEWE12ESvlaE",
     authDomain: "dimaxachivments.firebaseapp.com",
@@ -249,16 +336,34 @@
     appId: "1:1607300611:web:1af2ef66270d40b7dec036"
   };
 
-  // Инициализация Firebase
   firebase.initializeApp(firebaseConfig);
   const db = firebase.database();
-
-  // ---- Работа с Realtime Database ----
-  const DB_PATH = 'achievements'; // путь в базе
+  const DB_PATH = 'achievements';
 
   let achievements = [];
 
-  // ---- Подписка на изменения в реальном времени ----
+  // ---- Вспомогательные функции для определения типа файла ----
+  function getFileExtensionFromUrl(url) {
+    try {
+      const path = new URL(url).pathname;
+      const parts = path.split('.');
+      return parts.length > 1 ? parts.pop().toLowerCase() : '';
+    } catch {
+      return '';
+    }
+  }
+
+  function isImage(url) {
+    const ext = getFileExtensionFromUrl(url);
+    return ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp', 'svg', 'ico'].includes(ext);
+  }
+
+  function isVideo(url) {
+    const ext = getFileExtensionFromUrl(url);
+    return ['mp4', 'webm', 'mov', 'avi', 'mkv', 'flv', 'wmv', 'm4v'].includes(ext);
+  }
+
+  // ---- Подписка на изменения ----
   function subscribeToAchievements() {
     db.ref(DB_PATH).on('value', (snapshot) => {
       const data = snapshot.val();
@@ -278,7 +383,7 @@
     });
   }
 
-  // ---- Добавление ----
+  // ---- Добавление новой ачивки (без файла) ----
   async function addAchievement(title, description) {
     try {
       const newRef = db.ref(DB_PATH).push();
@@ -287,10 +392,20 @@
         description: description || '',
         completedDima: false,
         completedMaxim: false,
-        createdAt: firebase.database.ServerValue.TIMESTAMP
+        createdAt: firebase.database.ServerValue.TIMESTAMP,
+        fileURL: null  // пока нет файла
       });
     } catch (error) {
       alert('Ошибка при добавлении: ' + error.message);
+    }
+  }
+
+  // ---- Обновление ссылки на файл ----
+  async function updateFileUrl(id, url) {
+    try {
+      await db.ref(`${DB_PATH}/${id}/fileURL`).set(url || null);
+    } catch (error) {
+      alert('Ошибка обновления файла: ' + error.message);
     }
   }
 
@@ -303,7 +418,7 @@
     }
   }
 
-  // ---- Удаление ----
+  // ---- Удаление ачивки ----
   async function deleteAchievement(id) {
     try {
       await db.ref(`${DB_PATH}/${id}`).remove();
@@ -338,30 +453,80 @@
     container.innerHTML = sorted.map(ach => {
       const bothCompleted = ach.completedDima && ach.completedMaxim;
       const itemClass = bothCompleted ? 'achievement-item completed-by-both' : 'achievement-item';
+
+      // Отображение файла
+      let fileHtml = '';
+      if (ach.fileURL) {
+        const url = ach.fileURL;
+        if (isImage(url)) {
+          fileHtml = `
+            <div class="achievement-file">
+              <a href="${url}" target="_blank">🖼️ Открыть изображение</a>
+              <img src="${url}" alt="Превью" loading="lazy" />
+            </div>
+          `;
+        } else if (isVideo(url)) {
+          fileHtml = `
+            <div class="achievement-file">
+              <a href="${url}" target="_blank">🎬 Открыть видео</a>
+              <video controls preload="metadata" src="${url}"></video>
+            </div>
+          `;
+        } else {
+          fileHtml = `
+            <div class="achievement-file">
+              <a href="${url}" target="_blank">📎 Ссылка на файл</a>
+            </div>
+          `;
+        }
+      }
+
+      // Кнопка "Прикрепить файл" / редактирование
+      const attachBtnHtml = `
+        <button class="attach-btn" data-id="${ach.id}" data-action="editFile">
+          ${ach.fileURL ? '✏️ Изменить файл' : '📎 Прикрепить файл'}
+        </button>
+      `;
+
+      // Область редактирования файла (скрыта по умолчанию)
+      const editAreaHtml = `
+        <div class="file-edit-area" id="edit-${ach.id}" style="display: none;">
+          <input type="url" placeholder="Вставьте ссылку на файл (изображение, видео, документ)" class="file-url-input" />
+          <button class="save-file-btn" data-id="${ach.id}">Сохранить</button>
+          <button class="cancel-edit-btn" data-id="${ach.id}">Отмена</button>
+          ${ach.fileURL ? `<button class="remove-file-btn" data-id="${ach.id}">🗑️ Удалить</button>` : ''}
+        </div>
+      `;
+
       return `
         <div class="${itemClass}" data-id="${ach.id}">
-          <div class="achievement-info">
-            <div class="achievement-title">${escapeHtml(ach.title)}</div>
-            ${ach.description ? `<div class="achievement-desc">${escapeHtml(ach.description)}</div>` : ''}
-          </div>
-          <div class="checkboxes">
-            <label class="dima-label">
-              <input type="checkbox" class="ach-checkbox dima-check" ${ach.completedDima ? 'checked' : ''} />
-              🙋 Дима
-            </label>
-            <label class="maxim-label">
-              <input type="checkbox" class="ach-checkbox maxim-check" ${ach.completedMaxim ? 'checked' : ''} />
-              👫 Максим
-            </label>
-          </div>
-          <div class="achievement-actions">
-            <button class="delete-btn" title="Удалить">✕</button>
+          <div class="main-row">
+            <div class="achievement-info">
+              <div class="achievement-title">${escapeHtml(ach.title)}</div>
+              ${ach.description ? `<div class="achievement-desc">${escapeHtml(ach.description)}</div>` : ''}
+              ${fileHtml}
+              ${attachBtnHtml}
+              ${editAreaHtml}
+            </div>
+            <div class="checkboxes">
+              <label class="dima-label">
+                <input type="checkbox" class="ach-checkbox dima-check" ${ach.completedDima ? 'checked' : ''} />
+                🙋 Дима
+              </label>
+              <label class="maxim-label">
+                <input type="checkbox" class="ach-checkbox maxim-check" ${ach.completedMaxim ? 'checked' : ''} />
+                👫 Максим
+              </label>
+            </div>
+            <div class="achievement-actions">
+              <button class="delete-btn" title="Удалить">✕</button>
+            </div>
           </div>
         </div>
       `;
     }).join('');
 
-    // События на чекбоксы
+    // ---- События на чекбоксы ----
     container.querySelectorAll('.ach-checkbox').forEach(cb => {
       cb.addEventListener('change', function() {
         const item = this.closest('.achievement-item');
@@ -372,7 +537,7 @@
       });
     });
 
-    // События на удаление
+    // ---- События на удаление ----
     container.querySelectorAll('.delete-btn').forEach(btn => {
       btn.addEventListener('click', function() {
         const item = this.closest('.achievement-item');
@@ -382,16 +547,68 @@
         }
       });
     });
+
+    // ---- События на кнопку "Прикрепить файл" ----
+    container.querySelectorAll('.attach-btn').forEach(btn => {
+      btn.addEventListener('click', function() {
+        const id = this.dataset.id;
+        const editArea = document.getElementById(`edit-${id}`);
+        if (editArea.style.display === 'none') {
+          editArea.style.display = 'flex';
+          // Фокус на поле ввода
+          const input = editArea.querySelector('.file-url-input');
+          if (input) input.focus();
+        } else {
+          editArea.style.display = 'none';
+        }
+      });
+    });
+
+    // ---- События на кнопку "Сохранить" ----
+    container.querySelectorAll('.save-file-btn').forEach(btn => {
+      btn.addEventListener('click', function() {
+        const id = this.dataset.id;
+        const editArea = document.getElementById(`edit-${id}`);
+        const input = editArea.querySelector('.file-url-input');
+        const url = input.value.trim();
+        if (url) {
+          updateFileUrl(id, url);
+          editArea.style.display = 'none';
+        } else {
+          alert('Введите ссылку на файл');
+        }
+      });
+    });
+
+    // ---- События на "Отмена" ----
+    container.querySelectorAll('.cancel-edit-btn').forEach(btn => {
+      btn.addEventListener('click', function() {
+        const id = this.dataset.id;
+        document.getElementById(`edit-${id}`).style.display = 'none';
+      });
+    });
+
+    // ---- События на "Удалить файл" ----
+    container.querySelectorAll('.remove-file-btn').forEach(btn => {
+      btn.addEventListener('click', function() {
+        const id = this.dataset.id;
+        if (confirm('Удалить прикреплённый файл?')) {
+          updateFileUrl(id, null);
+          const editArea = document.getElementById(`edit-${id}`);
+          editArea.style.display = 'none';
+        }
+      });
+    });
   }
 
-  // ---- Защита от XSS ----
   function escapeHtml(text) {
+    if (!text) return '';
     const div = document.createElement('div');
     div.textContent = text;
     return div.innerHTML;
   }
 
-  // ---- Обработчик добавления ----
+  // ---- Обработчик добавления новой ачивки ----
   document.getElementById('addBtn').addEventListener('click', function() {
     const titleInput = document.getElementById('titleInput');
     const descInput = document.getElementById('descInput');
