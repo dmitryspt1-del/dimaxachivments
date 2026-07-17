@@ -12,9 +12,9 @@
       font-family: 'Segoe UI', system-ui, sans-serif;
       background: #f0f4f8;
       min-height: 100vh;
+      padding: 2rem 1rem 2rem;
       display: flex;
       justify-content: center;
-      padding: 2rem 1rem;
     }
     .container {
       max-width: 800px;
@@ -23,8 +23,22 @@
       border-radius: 32px;
       box-shadow: 0 20px 60px rgba(0,0,0,0.08);
       padding: 2rem 2rem 2.5rem;
+      position: relative;
     }
-    h1 {
+
+    /* ---- Липкая шапка ---- */
+    .sticky-header {
+      position: sticky;
+      top: 0;
+      background: white;
+      z-index: 10;
+      padding-top: 0.5rem;
+      padding-bottom: 1rem;
+      margin-top: -0.5rem;
+      border-bottom: 1px solid #edf2f7;
+      margin-bottom: 1.5rem;
+    }
+    .sticky-header h1 {
       font-size: 2.2rem;
       font-weight: 700;
       color: #1a202c;
@@ -33,14 +47,14 @@
       gap: 0.6rem;
       margin-bottom: 0.25rem;
     }
-    .subhead {
+    .sticky-header .subhead {
       color: #4a5568;
       margin-bottom: 1.5rem;
       font-size: 1rem;
       border-left: 4px solid #667eea;
       padding-left: 1rem;
     }
-    .stats {
+    .sticky-header .stats {
       display: flex;
       flex-wrap: wrap;
       gap: 1.2rem 2rem;
@@ -51,28 +65,29 @@
       font-weight: 500;
       color: #2d3748;
     }
-    .stats span { font-weight: 600; }
-    .stats .dima { color: #667eea; }
-    .stats .maxim { color: #f6ad55; }
-    .stats .both { color: #48bb78; }
-    .stats .total { color: #2d3748; }
-    .stats .done { color: #48bb78; }
+    .sticky-header .stats span { font-weight: 600; }
+    .sticky-header .stats .dima { color: #667eea; }
+    .sticky-header .stats .maxim { color: #f6ad55; }
+    .sticky-header .stats .both { color: #48bb78; }
+    .sticky-header .stats .total { color: #2d3748; }
+    .sticky-header .stats .done { color: #48bb78; }
 
-    .add-form {
+    .sticky-header .add-form {
       display: flex;
       flex-direction: column;
       gap: 0.8rem;
-      margin-bottom: 2.5rem;
       background: #f7fafc;
       padding: 1.2rem;
       border-radius: 24px;
+      margin-bottom: 0.5rem;
     }
-    .add-form .row {
+    .sticky-header .add-form .row {
       display: flex;
       gap: 0.8rem;
       flex-wrap: wrap;
     }
-    .add-form input, .add-form textarea {
+    .sticky-header .add-form input,
+    .sticky-header .add-form textarea {
       flex: 1;
       padding: 0.8rem 1.2rem;
       border: 2px solid #e2e8f0;
@@ -82,17 +97,18 @@
       background: white;
       font-family: inherit;
     }
-    .add-form input:focus, .add-form textarea:focus {
+    .sticky-header .add-form input:focus,
+    .sticky-header .add-form textarea:focus {
       outline: none;
       border-color: #667eea;
       box-shadow: 0 0 0 4px rgba(102,126,234,0.15);
     }
-    .add-form textarea {
+    .sticky-header .add-form textarea {
       border-radius: 24px;
       resize: vertical;
       min-height: 60px;
     }
-    .add-form button {
+    .sticky-header .add-form button {
       background: #667eea;
       color: white;
       border: none;
@@ -107,16 +123,19 @@
       gap: 0.5rem;
       white-space: nowrap;
     }
-    .add-form button:hover {
+    .sticky-header .add-form button:hover {
       background: #5a6fd6;
       transform: scale(1.02);
     }
 
+    /* ---- Список ачивок (прокручивается) ---- */
     .achievement-list {
       display: flex;
       flex-direction: column;
       gap: 0.8rem;
+      padding-top: 0.5rem;
     }
+
     .achievement-item {
       background: #f7fafc;
       border-radius: 20px;
@@ -344,40 +363,132 @@
       color: #667eea;
       padding: 2rem 0;
     }
+
+    /* ---- Toast уведомления (оставляем как есть) ---- */
+    .toast-container {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      max-width: 380px;
+      width: 100%;
+    }
+    .toast {
+      background: #1a202c;
+      color: white;
+      padding: 1rem 1.5rem;
+      border-radius: 16px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+      animation: slideIn 0.3s ease;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+    .toast:hover {
+      transform: scale(1.02);
+    }
+    .toast .toast-icon {
+      font-size: 1.6rem;
+    }
+    .toast .toast-content {
+      flex: 1;
+    }
+    .toast .toast-title {
+      font-weight: 600;
+      font-size: 1rem;
+    }
+    .toast .toast-desc {
+      font-size: 0.85rem;
+      opacity: 0.8;
+      margin-top: 2px;
+    }
+    .toast .toast-close {
+      background: none;
+      border: none;
+      color: #a0aec0;
+      font-size: 1.2rem;
+      cursor: pointer;
+      padding: 0;
+      line-height: 1;
+    }
+    .toast .toast-close:hover {
+      color: white;
+    }
+    @keyframes slideIn {
+      from { transform: translateX(100%); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+    @media (max-width: 480px) {
+      .toast-container { right: 10px; left: 10px; max-width: 100%; }
+    }
+
+    /* ---- Бадж ---- */
+    .badge {
+      background: #e53e3e;
+      color: white;
+      border-radius: 30px;
+      padding: 0.1rem 0.6rem;
+      font-size: 0.8rem;
+      font-weight: 700;
+      margin-left: 0.6rem;
+      display: inline-block;
+      animation: pulse 1.5s infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+    }
+
     @media (max-width: 600px) {
-      .container { padding: 1.5rem; }
-      .add-form .row { flex-direction: column; }
+      .container { padding: 1rem; }
+      .sticky-header .add-form .row { flex-direction: column; }
       .achievement-item .main-row { flex-direction: column; align-items: stretch; }
       .checkboxes { justify-content: space-around; }
       .achievement-actions { margin-left: 0; align-self: flex-end; }
+      .sticky-header .stats { gap: 0.8rem 1.2rem; padding: 0.5rem 1rem; }
     }
   </style>
 </head>
 <body>
 
 <div class="container">
-  <h1>🏆 Ачивки</h1>
-  
+  <!-- Липкая шапка -->
+  <div class="sticky-header">
+    <h1>
+      🏆 Ачивки
+      <span id="badge-container"></span>
+    </h1>
+    <div class="subhead">Совместный список Димы и Максима на 2026 год</div>
 
-  <div class="stats">
-    <span>📊 Всего: <span class="total" id="total-count">0</span></span>
-    <span>✅ Выполнено (оба): <span class="done" id="done-both-count">0</span></span>
-    <span>🙋 Дима: <span class="dima" id="dima-count">0</span></span>
-    <span>👫 Максим: <span class="maxim" id="maxim-count">0</span></span>
-  </div>
-
-  <div class="add-form">
-    <div class="row">
-      <input type="text" id="titleInput" placeholder="Название ачивки" required />
-      <button id="addBtn">➕ Добавить</button>
+    <div class="stats">
+      <span>📊 Всего: <span class="total" id="total-count">0</span></span>
+      <span>✅ Выполнено (оба): <span class="done" id="done-both-count">0</span></span>
+      <span>🙋 Дима: <span class="dima" id="dima-count">0</span></span>
+      <span>👫 Максим: <span class="maxim" id="maxim-count">0</span></span>
     </div>
-    <textarea id="descInput" placeholder="Описание"></textarea>
+
+    <div class="add-form">
+      <div class="row">
+        <input type="text" id="titleInput" placeholder="Название ачивки" required />
+        <button id="addBtn">➕ Добавить</button>
+      </div>
+      <textarea id="descInput" placeholder="Описание (необязательно)"></textarea>
+    </div>
   </div>
 
+  <!-- Список ачивок (прокручивается) -->
   <div id="listContainer" class="achievement-list">
     <div class="loading">⏳ Загрузка данных...</div>
   </div>
 </div>
+
+<!-- Контейнер для тостов -->
+<div id="toastContainer" class="toast-container"></div>
 
 <script>
   // ---- Конфиг Firebase ----
@@ -395,6 +506,8 @@
   const DB_PATH = 'achievements';
 
   let achievements = [];
+  let newAchievementIds = new Set();
+  let lastVisit = parseInt(localStorage.getItem('lastVisitTime')) || 0;
 
   // ---- ВСТАВЬТЕ СВОЙ API КЛЮЧ ОТ IMGBB ----
   const IMGBB_API_KEY = '74961692cbceea32ddf4c632ec9678e6';
@@ -440,6 +553,69 @@
     return ['mp4', 'webm', 'mov', 'avi', 'mkv', 'flv', 'wmv', 'm4v'].includes(ext);
   }
 
+  // ---- Уведомления (тосты и бадж) ----
+  function showToast(title, desc, icon = '🎉') {
+    const container = document.getElementById('toastContainer');
+    const toast = document.createElement('div');
+    toast.className = 'toast';
+    toast.innerHTML = `
+      <span class="toast-icon">${icon}</span>
+      <div class="toast-content">
+        <div class="toast-title">${title}</div>
+        ${desc ? `<div class="toast-desc">${desc}</div>` : ''}
+      </div>
+      <button class="toast-close">&times;</button>
+    `;
+    container.appendChild(toast);
+
+    toast.querySelector('.toast-close').addEventListener('click', (e) => {
+      e.stopPropagation();
+      toast.remove();
+    });
+    toast.addEventListener('click', () => {
+      toast.remove();
+    });
+
+    setTimeout(() => {
+      if (toast.parentNode) toast.remove();
+    }, 5000);
+  }
+
+  function checkNewAchievements() {
+    const now = Date.now();
+    const newAchs = achievements.filter(a => {
+      if (!a.createdAt) return false;
+      if (a.createdAt <= lastVisit) return false;
+      if (newAchievementIds.has(a.id)) return false;
+      return true;
+    });
+
+    if (newAchs.length > 0) {
+      if (newAchs.length === 1) {
+        const ach = newAchs[0];
+        showToast(`Новая ачивка: ${ach.title}`, ach.description || '', '✨');
+      } else {
+        showToast(`Новых ачивок: ${newAchs.length}`, 'Нажмите, чтобы посмотреть', '📢');
+      }
+      newAchs.forEach(a => newAchievementIds.add(a.id));
+      lastVisit = now;
+      localStorage.setItem('lastVisitTime', String(now));
+      updateBadge();
+    }
+  }
+
+  function updateBadge() {
+    const badgeContainer = document.getElementById('badge-container');
+    const newCount = achievements.filter(a => {
+      return a.createdAt && a.createdAt > lastVisit && !newAchievementIds.has(a.id);
+    }).length;
+    if (newCount > 0) {
+      badgeContainer.innerHTML = `<span class="badge">${newCount}</span>`;
+    } else {
+      badgeContainer.innerHTML = '';
+    }
+  }
+
   // ---- Подписка на изменения ----
   function subscribeToAchievements() {
     db.ref(DB_PATH).on('value', (snapshot) => {
@@ -452,7 +628,9 @@
       } else {
         achievements = [];
       }
+      checkNewAchievements();
       render();
+      updateBadge();
     }, (error) => {
       console.error('Ошибка загрузки:', error);
       document.getElementById('listContainer').innerHTML =
@@ -460,7 +638,7 @@
     });
   }
 
-  // ---- Добавление новой ачивки (без файлов) ----
+  // ---- Добавление новой ачивки ----
   async function addAchievement(title, description) {
     try {
       const newRef = db.ref(DB_PATH).push();
@@ -478,7 +656,7 @@
     }
   }
 
-  // ---- Обновление ссылки на файл для конкретного владельца ----
+  // ---- Обновление ссылки на файл ----
   async function updateFileUrl(id, owner, url) {
     try {
       const field = owner === 'Dima' ? 'fileDima' : 'fileMaxim';
@@ -535,7 +713,6 @@
       const bothCompleted = ach.completedDima && ach.completedMaxim;
       const itemClass = bothCompleted ? 'achievement-item completed-by-both' : 'achievement-item';
 
-      // ---- Функция для отображения одного файла ----
       function renderFile(url, owner) {
         if (!url) return '';
         const ownerLabel = owner === 'Dima' ? 'Дима' : 'Максим';
@@ -556,7 +733,6 @@
         `;
       }
 
-      // ---- Две кнопки-скрепки ----
       const attachDimaHtml = `
         <button class="attach-btn dima-attach ${ach.fileDima ? 'has-file' : ''}" 
                 data-id="${ach.id}" data-owner="Dima"
@@ -572,7 +748,6 @@
         </button>
       `;
 
-      // ---- Области редактирования для каждого файла ----
       const editAreaDima = `
         <div class="file-edit-area" id="edit-${ach.id}-Dima" style="display: none;">
           <input type="file" accept="image/*,video/*,.gif" />
@@ -592,7 +767,6 @@
         </div>
       `;
 
-      // ---- Сборка всех файлов в один блок ----
       let filesHtml = '';
       if (ach.fileDima || ach.fileMaxim) {
         filesHtml = `<div class="achievement-files">`;
@@ -631,7 +805,7 @@
       `;
     }).join('');
 
-    // ---- События на чекбоксы ----
+    // ---- События ----
     container.querySelectorAll('.ach-checkbox').forEach(cb => {
       cb.addEventListener('change', function() {
         const item = this.closest('.achievement-item');
@@ -642,7 +816,6 @@
       });
     });
 
-    // ---- События на удаление ----
     container.querySelectorAll('.delete-btn').forEach(btn => {
       btn.addEventListener('click', function() {
         const item = this.closest('.achievement-item');
@@ -653,7 +826,6 @@
       });
     });
 
-    // ---- События на кнопки-скрепки (показать/скрыть область) ----
     container.querySelectorAll('.attach-btn').forEach(btn => {
       btn.addEventListener('click', function() {
         const id = this.dataset.id;
@@ -667,7 +839,6 @@
       });
     });
 
-    // ---- События на "Загрузить" ----
     container.querySelectorAll('.save-file-btn').forEach(btn => {
       btn.addEventListener('click', async function() {
         const id = this.dataset.id;
@@ -698,7 +869,6 @@
       });
     });
 
-    // ---- События на "Отмена" ----
     container.querySelectorAll('.cancel-edit-btn').forEach(btn => {
       btn.addEventListener('click', function() {
         const id = this.dataset.id;
@@ -713,7 +883,6 @@
       });
     });
 
-    // ---- События на "Удалить файл" ----
     container.querySelectorAll('.remove-file-btn').forEach(btn => {
       btn.addEventListener('click', function() {
         const id = this.dataset.id;
