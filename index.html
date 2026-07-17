@@ -55,6 +55,8 @@
     .stats .dima { color: #667eea; }
     .stats .maxim { color: #f6ad55; }
     .stats .both { color: #48bb78; }
+    .stats .total { color: #2d3748; }
+    .stats .done { color: #48bb78; }
 
     .add-form {
       display: flex;
@@ -154,32 +156,48 @@
       font-size: 0.9rem;
       margin-top: 2px;
     }
-    .achievement-file {
+    .achievement-files {
       margin-top: 0.4rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.3rem;
     }
-    .achievement-file a {
+    .file-item {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      flex-wrap: wrap;
+    }
+    .file-item .owner-label {
+      font-weight: 600;
+      font-size: 0.8rem;
+      background: #edf2f7;
+      padding: 0.1rem 0.5rem;
+      border-radius: 30px;
+    }
+    .file-item .owner-label.dima-label { color: #667eea; background: #ebf0ff; }
+    .file-item .owner-label.maxim-label { color: #f6ad55; background: #fff5e6; }
+    .file-item a {
       color: #667eea;
       text-decoration: none;
       font-size: 0.9rem;
-      display: inline-flex;
-      align-items: center;
-      gap: 0.3rem;
     }
-    .achievement-file a:hover {
+    .file-item a:hover {
       text-decoration: underline;
     }
-    .achievement-file img,
-    .achievement-file video {
+    .file-item img,
+    .file-item video {
       max-width: 100%;
-      max-height: 300px;
+      max-height: 200px;
       border-radius: 12px;
-      margin-top: 0.4rem;
+      margin-top: 0.2rem;
       border: 1px solid #e2e8f0;
       display: block;
     }
-    .achievement-file video {
+    .file-item video {
       background: #000;
     }
+
     .file-edit-area {
       margin-top: 0.5rem;
       display: flex;
@@ -253,6 +271,7 @@
       display: flex;
       gap: 0.2rem;
       margin-left: auto;
+      align-items: center;
     }
     .achievement-actions button {
       background: none;
@@ -269,7 +288,7 @@
       color: #e53e3e;
     }
 
-    /* ---- Новая стильная кнопка-скрепка ---- */
+    /* ---- Две кнопки-скрепки ---- */
     .attach-btn {
       background: none;
       border: 1px solid transparent;
@@ -283,10 +302,10 @@
       align-items: center;
       gap: 0.2rem;
       line-height: 1;
+      font-weight: 500;
     }
     .attach-btn:hover {
       background: #edf2f7;
-      color: #667eea;
       border-color: #e2e8f0;
     }
     .attach-btn:active {
@@ -294,6 +313,24 @@
     }
     .attach-btn.has-file {
       color: #667eea;
+    }
+    .attach-btn.dima-attach {
+      color: #667eea;
+    }
+    .attach-btn.dima-attach:hover {
+      background: #ebf0ff;
+      border-color: #667eea;
+    }
+    .attach-btn.maxim-attach {
+      color: #f6ad55;
+    }
+    .attach-btn.maxim-attach:hover {
+      background: #fff5e6;
+      border-color: #f6ad55;
+    }
+    .attach-btn .initials {
+      font-size: 0.7rem;
+      font-weight: 700;
     }
 
     .empty {
@@ -323,9 +360,10 @@
   
 
   <div class="stats">
+    <span>📊 Всего: <span class="total" id="total-count">0</span></span>
+    <span>✅ Выполнено (оба): <span class="done" id="done-both-count">0</span></span>
     <span>🙋 Дима: <span class="dima" id="dima-count">0</span></span>
     <span>👫 Максим: <span class="maxim" id="maxim-count">0</span></span>
-    <span>✅ Оба: <span class="both" id="both-count">0</span></span>
   </div>
 
   <div class="add-form">
@@ -378,7 +416,7 @@
     }
 
     const result = await response.json();
-    return result.data.url; // прямая ссылка на изображение
+    return result.data.url;
   }
 
   // ---- Вспомогательные функции для определения типа файла ----
@@ -422,7 +460,7 @@
     });
   }
 
-  // ---- Добавление новой ачивки (без файла) ----
+  // ---- Добавление новой ачивки (без файлов) ----
   async function addAchievement(title, description) {
     try {
       const newRef = db.ref(DB_PATH).push();
@@ -432,17 +470,19 @@
         completedDima: false,
         completedMaxim: false,
         createdAt: firebase.database.ServerValue.TIMESTAMP,
-        fileURL: null
+        fileDima: null,
+        fileMaxim: null
       });
     } catch (error) {
       alert('Ошибка при добавлении: ' + error.message);
     }
   }
 
-  // ---- Обновление ссылки на файл ----
-  async function updateFileUrl(id, url) {
+  // ---- Обновление ссылки на файл для конкретного владельца ----
+  async function updateFileUrl(id, owner, url) {
     try {
-      await db.ref(`${DB_PATH}/${id}/fileURL`).set(url || null);
+      const field = owner === 'Dima' ? 'fileDima' : 'fileMaxim';
+      await db.ref(`${DB_PATH}/${id}/${field}`).set(url || null);
     } catch (error) {
       alert('Ошибка обновления файла: ' + error.message);
     }
@@ -474,9 +514,11 @@
     const dimaDone = achievements.filter(a => a.completedDima).length;
     const maximDone = achievements.filter(a => a.completedMaxim).length;
     const bothDone = achievements.filter(a => a.completedDima && a.completedMaxim).length;
+
+    document.getElementById('total-count').textContent = total;
+    document.getElementById('done-both-count').textContent = bothDone;
     document.getElementById('dima-count').textContent = dimaDone;
     document.getElementById('maxim-count').textContent = maximDone;
-    document.getElementById('both-count').textContent = bothDone;
 
     if (total === 0) {
       container.innerHTML = `<div class="empty">✨ Пока нет ачивок. Добавьте первую!</div>`;
@@ -493,52 +535,71 @@
       const bothCompleted = ach.completedDima && ach.completedMaxim;
       const itemClass = bothCompleted ? 'achievement-item completed-by-both' : 'achievement-item';
 
-      // Отображение файла
-      let fileHtml = '';
-      if (ach.fileURL) {
-        const url = ach.fileURL;
+      // ---- Функция для отображения одного файла ----
+      function renderFile(url, owner) {
+        if (!url) return '';
+        const ownerLabel = owner === 'Dima' ? 'Дима' : 'Максим';
+        const labelClass = owner === 'Dima' ? 'dima-label' : 'maxim-label';
+        let content = '';
         if (isImage(url)) {
-          fileHtml = `
-            <div class="achievement-file">
-              <a href="${url}" target="_blank">🖼️ Открыть изображение</a>
-              <img src="${url}" alt="Превью" loading="lazy" />
-            </div>
-          `;
+          content = `<a href="${url}" target="_blank">🖼️ Открыть</a><img src="${url}" alt="Превью" loading="lazy" />`;
         } else if (isVideo(url)) {
-          fileHtml = `
-            <div class="achievement-file">
-              <a href="${url}" target="_blank">🎬 Открыть видео</a>
-              <video controls preload="metadata" src="${url}"></video>
-            </div>
-          `;
+          content = `<a href="${url}" target="_blank">🎬 Открыть</a><video controls preload="metadata" src="${url}"></video>`;
         } else {
-          fileHtml = `
-            <div class="achievement-file">
-              <a href="${url}" target="_blank">📎 Ссылка на файл</a>
-            </div>
-          `;
+          content = `<a href="${url}" target="_blank">📎 Скачать</a>`;
         }
+        return `
+          <div class="file-item">
+            <span class="owner-label ${labelClass}">${ownerLabel}</span>
+            ${content}
+          </div>
+        `;
       }
 
-      // ---- Аккуратная иконка скрепки ----
-      const attachBtnHtml = `
-        <button class="attach-btn ${ach.fileURL ? 'has-file' : ''}" 
-                data-id="${ach.id}" 
-                title="${ach.fileURL ? 'Изменить файл' : 'Прикрепить файл'}">
-          📎
+      // ---- Две кнопки-скрепки ----
+      const attachDimaHtml = `
+        <button class="attach-btn dima-attach ${ach.fileDima ? 'has-file' : ''}" 
+                data-id="${ach.id}" data-owner="Dima"
+                title="${ach.fileDima ? 'Изменить файл Димы' : 'Прикрепить файл Димы'}">
+          📎<span class="initials">Д</span>
+        </button>
+      `;
+      const attachMaximHtml = `
+        <button class="attach-btn maxim-attach ${ach.fileMaxim ? 'has-file' : ''}" 
+                data-id="${ach.id}" data-owner="Maxim"
+                title="${ach.fileMaxim ? 'Изменить файл Максима' : 'Прикрепить файл Максима'}">
+          📎<span class="initials">М</span>
         </button>
       `;
 
-      // Область редактирования файла (скрыта по умолчанию)
-      const editAreaHtml = `
-        <div class="file-edit-area" id="edit-${ach.id}" style="display: none;">
+      // ---- Области редактирования для каждого файла ----
+      const editAreaDima = `
+        <div class="file-edit-area" id="edit-${ach.id}-Dima" style="display: none;">
           <input type="file" accept="image/*,video/*,.gif" />
           <span class="uploading" style="display:none;">⏳ Загрузка...</span>
-          <button class="save-file-btn" data-id="${ach.id}">Загрузить</button>
-          <button class="cancel-edit-btn" data-id="${ach.id}">Отмена</button>
-          ${ach.fileURL ? `<button class="remove-file-btn" data-id="${ach.id}">🗑️ Удалить</button>` : ''}
+          <button class="save-file-btn" data-id="${ach.id}" data-owner="Dima">Загрузить</button>
+          <button class="cancel-edit-btn" data-id="${ach.id}" data-owner="Dima">Отмена</button>
+          ${ach.fileDima ? `<button class="remove-file-btn" data-id="${ach.id}" data-owner="Dima">🗑️ Удалить</button>` : ''}
         </div>
       `;
+      const editAreaMaxim = `
+        <div class="file-edit-area" id="edit-${ach.id}-Maxim" style="display: none;">
+          <input type="file" accept="image/*,video/*,.gif" />
+          <span class="uploading" style="display:none;">⏳ Загрузка...</span>
+          <button class="save-file-btn" data-id="${ach.id}" data-owner="Maxim">Загрузить</button>
+          <button class="cancel-edit-btn" data-id="${ach.id}" data-owner="Maxim">Отмена</button>
+          ${ach.fileMaxim ? `<button class="remove-file-btn" data-id="${ach.id}" data-owner="Maxim">🗑️ Удалить</button>` : ''}
+        </div>
+      `;
+
+      // ---- Сборка всех файлов в один блок ----
+      let filesHtml = '';
+      if (ach.fileDima || ach.fileMaxim) {
+        filesHtml = `<div class="achievement-files">`;
+        if (ach.fileDima) filesHtml += renderFile(ach.fileDima, 'Dima');
+        if (ach.fileMaxim) filesHtml += renderFile(ach.fileMaxim, 'Maxim');
+        filesHtml += `</div>`;
+      }
 
       return `
         <div class="${itemClass}" data-id="${ach.id}">
@@ -546,7 +607,7 @@
             <div class="achievement-info">
               <div class="achievement-title">${escapeHtml(ach.title)}</div>
               ${ach.description ? `<div class="achievement-desc">${escapeHtml(ach.description)}</div>` : ''}
-              ${fileHtml}
+              ${filesHtml}
             </div>
             <div class="checkboxes">
               <label class="dima-label">
@@ -559,11 +620,13 @@
               </label>
             </div>
             <div class="achievement-actions">
-              ${attachBtnHtml}
+              ${attachDimaHtml}
+              ${attachMaximHtml}
               <button class="delete-btn" title="Удалить">✕</button>
             </div>
           </div>
-          ${editAreaHtml}
+          ${editAreaDima}
+          ${editAreaMaxim}
         </div>
       `;
     }).join('');
@@ -590,11 +653,12 @@
       });
     });
 
-    // ---- События на кнопку-скрепку (показать/скрыть область) ----
+    // ---- События на кнопки-скрепки (показать/скрыть область) ----
     container.querySelectorAll('.attach-btn').forEach(btn => {
       btn.addEventListener('click', function() {
         const id = this.dataset.id;
-        const editArea = document.getElementById(`edit-${id}`);
+        const owner = this.dataset.owner;
+        const editArea = document.getElementById(`edit-${id}-${owner}`);
         if (editArea.style.display === 'none') {
           editArea.style.display = 'flex';
         } else {
@@ -607,7 +671,8 @@
     container.querySelectorAll('.save-file-btn').forEach(btn => {
       btn.addEventListener('click', async function() {
         const id = this.dataset.id;
-        const editArea = document.getElementById(`edit-${id}`);
+        const owner = this.dataset.owner;
+        const editArea = document.getElementById(`edit-${id}-${owner}`);
         const fileInput = editArea.querySelector('input[type="file"]');
         const file = fileInput.files[0];
         if (!file) {
@@ -621,7 +686,7 @@
 
         try {
           const url = await uploadToImgBB(file);
-          await updateFileUrl(id, url);
+          await updateFileUrl(id, owner, url);
           editArea.style.display = 'none';
         } catch (error) {
           alert('Ошибка загрузки: ' + error.message);
@@ -637,7 +702,8 @@
     container.querySelectorAll('.cancel-edit-btn').forEach(btn => {
       btn.addEventListener('click', function() {
         const id = this.dataset.id;
-        const editArea = document.getElementById(`edit-${id}`);
+        const owner = this.dataset.owner;
+        const editArea = document.getElementById(`edit-${id}-${owner}`);
         editArea.style.display = 'none';
         const fileInput = editArea.querySelector('input[type="file"]');
         fileInput.value = '';
@@ -651,9 +717,10 @@
     container.querySelectorAll('.remove-file-btn').forEach(btn => {
       btn.addEventListener('click', function() {
         const id = this.dataset.id;
-        if (confirm('Удалить прикреплённый файл?')) {
-          updateFileUrl(id, null);
-          const editArea = document.getElementById(`edit-${id}`);
+        const owner = this.dataset.owner;
+        if (confirm(`Удалить файл ${owner === 'Dima' ? 'Димы' : 'Максима'}?`)) {
+          updateFileUrl(id, owner, null);
+          const editArea = document.getElementById(`edit-${id}-${owner}`);
           editArea.style.display = 'none';
         }
       });
